@@ -1,7 +1,7 @@
-name: "Fetal-oxygenation-study"
+name: Fetal-oxygenation-study
 output_dir: ../docs
 navbar:
-  title: "Fetal-oxygenation-study"
+  title: Fetal-oxygenation-study
   left:
   - text: Home
     href: index.html
@@ -9,6 +9,10 @@ navbar:
     href: about.html
   - text: License
     href: license.html
+  right:
+  - icon: fa-github
+    text: Source code
+    href: https://github.com/sabeard4/Fetal-oxygenation-study
 output:
   workflowr::wflow_html:
     toc: yes
