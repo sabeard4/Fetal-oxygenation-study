@@ -8,4 +8,11 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+##Transcriptomic analysis of circulating RNA from the maternal blood of women with preterm growth restricted pregnancies
+
+This site contains the analysis of RNA-seq data generated from maternal blood collected into PAXgene tubes. Blood was collected from women prior to delivery for preterm fetal growth restriction. Gene expression differences in the maternal blood between women with and without preeclampsia were identified.
+
+##Mapping based DGE analysis
+
+*Read mapping, counting and quality control
+  *[MultiQC Report](/docs/multiqc_report.html): Mapping and quality statistics
