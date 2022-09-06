@@ -1,0 +1,350 @@
+---
+title: "FOX Preeclampsia limma-voom Differential Expression Analysis"
+author: "Sally Beard"
+date: "2022-09-07"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+The sequence data used in the following analysis was generated at AGRF for the [FOX study](https://link.springer.com/article/10.1186/s12916-020-01605-x). RNA was isolated from whole blood PAXgene tubes and Illumina’s TruSeq stranded RNA sample preparation kit with globin depletion was used to prepare libraries for sequencing. Libraries were pooled and clustered using the Illumina cBot system, followed by sequencing on the Illumina HiSeq 2000 platform to obtain 50 base pair single-end reads. Each library was split over two lanes, which generated two sequence files per sample. Fastq files were aligned against the human genome GRCh38 using `hisat2`, then files were sorted with `SAMtools`, before reads aligning to exons were counted using `htseq` with default parameters. Technical duplicates run in different sequencing lanes overlapped on MDS plots, indicating there was no batch effect due to lane, therefore in this analysis counts from technical duplicates were summed for further analysis.
+
+Only samples collected as cases in the FOX study were included in the following analysis. These consisted of maternal blood from women with preterm growth-restricted fetuses, recruited from six sites across Australia and New Zealand. Samples from 115 women were included. Patient characteristics are shown in table 1, followed by the analysis output. The two groups considered are those with preeclampsia according to ISSHP [guidelines](https://www.sciencedirect.com/science/article/abs/pii/S2210778918301260?via%3Dihub) and those without.
+
+```{r}
+#import required libraries
+library(limma)
+library(Glimma)
+library(edgeR)
+library(tidyverse)
+library(EDASeq)
+library(RColorBrewer)
+library(tableone)
+library(knitr)
+library(kableExtra)
+library(Homo.sapiens)
+library(patchwork)
+library(NMF)
+library(here)
+library(ggrepel)
+```
+
+Mapping statistics found that a high proportion of reads mapped to introns and intergenic regions, ie. not to exons, the protein coding part of genes. From the literature, this seems typical of RNA-seq libraries generated from PAXgene tubes using ribosome depletion (see Zhao, S., Zhang, Y., Gamini, R. et al. Evaluation of two main RNA-seq approaches for gene quantification in clinical RNA sequencing: polyA+ selection versus rRNA depletion. Sci Rep 8, 4781 (2018). [https://doi.org/10.1038/s41598-018-23226-4](link)). This meant that although the mean library size we received was ~30 million reads per sample, the effective library sizes were much smaller with a mean of ~6 million reads per sample. With such a small library size we would only expect very highly expressed genes to be detected as differentially expressed.
+
+## Data import
+
+Import sample information and create table of characteristics.
+
+```{r}
+metadata <- read.csv("data/sample_metadata.csv")
+#create a variable list
+vars <- c("age", "bmi", "diabetes", "hypertension","gestation_sampling", "gestation_delivery", "birthweight", "birthweight_centile", "fetal_sex", "cord_blood_pH")
+vars2 <- list(age = "Maternal age",
+             bmi = "Maternal BMI",
+             diabetes = "Diabetes",
+             hypertension = "Preeclampsia",
+             gestation_sampling = "Gestation at sample collection (weeks)",
+             gestation_delivery = "Gestation at delivery (weeks)",
+             birthweight = "Fetal birthweight (g)",
+             birthweight_centile = "Birthweight centile",
+             fetal_sex = "Fetal sex",
+             cord_blood_pH = "Cord blood pH")
+labelled::var_label(metadata) <- vars2
+
+#create Table 1 stratified by hypertension
+metadata$hypertension <- relevel(metadata$hypertension, "None")
+tableOne <- CreateTableOne(vars = vars, strata = "hypertension", data = metadata, testNonNormal = kruskal.test)
+kable_styling(kableone(tableOne, caption="Table 1: Patient characteristics for FOX cases included in RNA-seq analysis", nonnormal = c("birthweight_centile", "cord_blood_pH", "bmi"), varLabels = TRUE, dropEqual = TRUE))
+```
+
+
+
+Set up `DGElist` object for downstream analysis and add sample-specific information.
+
+```{r}
+#list count files from working directory
+files = list.files("/Users/beards/rnaseq_FOX/FOX_case_counts_tidy_PEvNoPE", pattern = "[counts]$")
+
+#edgeR has a function readDGE for combining separate count files into one matrix of counts in one step
+counts <- readDGE(files, path = "/Users/beards/rnaseq_FOX/FOX_case_counts_tidy_PEvNoPE", columns = c(1,3), header = FALSE)
+
+#remove meta tags as library size includes counts from the meta tags
+MetaTags <- grep("^__", rownames(counts))
+counts <- counts[-MetaTags, ]
+
+#update library size to reflect mapped reads
+counts$samples$lib.size <- colSums(counts$counts)
+
+#obtain sample names from file names
+sample <- strsplit2(files, "_")[,1]
+counts$samples$sample <- as.factor(sample)
+samplenames <- counts$samples$sample
+
+#sum counts from technical replicates
+counts <- sumTechReps(counts, ID=samplenames)
+
+#Add sample-level information related to experimental design (and possible confounding factors) to the count matrix
+counts$samples$site <- as.factor(metadata$site)
+counts$samples$sample <- as.factor(metadata$sample)
+counts$samples$sex <- as.factor(metadata$fetal_sex)
+counts$samples$group <- as.factor(metadata$hypertension)
+counts$samples$diabetes <- as.factor(metadata$diabetes)
+counts$samples$steroids <- as.factor(metadata$steroids)
+
+#import information for each gene
+geneid <- rownames(counts)
+genes <- select(Homo.sapiens, keys=geneid, columns=c("SYMBOL", "TXCHROM", "ENTREZID"), 
+                keytype="ENSEMBL")
+genes <- genes[!duplicated(genes$ENSEMBL),]
+counts$genes <- genes
+
+#remove genes without ENTREZ IDs
+keep <- !is.na(counts$genes$ENTREZID) & !is.null(counts$genes$ENTREZID)
+counts <- counts[keep, ]
+
+#generate library statistics
+cpm <- cpm(counts)
+lcpm <- cpm(counts, log=TRUE)
+L <- mean(counts$samples$lib.size) * 1e-6
+M <- median(counts$samples$lib.size) * 1e-6
+```
+
+## Quality Control
+
+Genes with no or low counts are unlikely to be biologically important, they provide little evidence for differential expression, and interfere with statistical approximations, so they were filtered out before performing the analysis. Genes with low or no counts (counts per million reads that corresponded to less than ~10 reads in any 44 samples (smallest group size)) were filtered out of the analysis, based on the recommendations in the edgeR documentation. Both smaller (>2) and larger (<100) thresholds were tested, lower thresholds detected more significant genes on average, higher thresholds detected less differentially expressed genes, but those that were detected are likely to be more robust. The threshold chosen for the analysis is commonly used in the literature and provided a good compromise.
+
+```{r}
+#filter out genes with low expression
+keep.exprs <- filterByExpr(counts, group=counts$samples$group)
+counts_FOX <- counts[keep.exprs,, keep.lib.sizes=FALSE]
+samplenames <- colnames(counts_FOX)
+```
+
+Plotting the distribution of log-CPM values (below) showed that before filtering (A) many genes in each sample had low or no expression, with negative log-CPM values. These genes were removed from the analysis after filtering (B). Filtering didn't improve the uniformity between samples however.
+
+```{r denisty-plot}
+#make density plots for counts before and after filtering out genes with low expression
+par(mfrow = c(1,1))
+lcpmz <- lcpm
+lcpm.cutoff <- log2(10/M + 2/L)
+nsamples <- ncol(counts)
+col <- scales::hue_pal()(nsamples)
+plot(density(lcpm[,1]), col=col[1], lwd=2, ylim=c(0,0.4), las=2, main="", xlab="")
+  title(main="A. Raw data", xlab="Log-cpm")
+abline(v=lcpm.cutoff, lty=3)
+for (i in 2:nsamples){
+  den <- density(lcpm[,i])
+  lines(den$x, den$y, col=col[i], lwd=2)
+}
+lcpm2 <- cpm(counts_FOX, log=TRUE)
+plot(density(lcpm2[,1]), col=col[1], lwd=2, ylim=c(0,0.4), las=2, main="", xlab="")
+title(main="B. Filtered data", xlab="Log-cpm")
+abline(v=lcpm.cutoff, lty=3)
+for (i in 2:nsamples){
+  den <- density(lcpm2[,i])
+  lines(den$x, den$y, col=col[i], lwd=2)
+}
+```
+
+We suspected that effective library size might have been contributing to the lack of uniformity between samples in the density plots. Colouring the samples by effective library size showed that the distribution of counts was similar for samples with larger libraries (8-12 million reads) where two peaks were seen after filtering, one at logCPM ~-1.5 and one at 5 (B). Samples with smaller libraries tended to have a single peak between 0 and 3 log-CPM (B).
+
+```{r density-plot-coloured-lib.size}
+#create binds for effective samples size
+lib.size <- counts_FOX$samples$lib.size
+#set up cut-off values
+breaks <- c(0,2000000,4000000,6000000,8000000,10000000,12000000)
+#specify bin labels
+tags <- c("[0-2m)", "[2-4m)", "[4-6m)", "[6-8m)", "[8-10m)", "[10-12m)")
+#bucket library sizes into bins
+group_tags <- cut(lib.size,
+                  breaks=breaks,
+                  include.lowest=TRUE,
+                  right=FALSE,
+                  labels=tags)
+#add new tags to count matrix
+counts_FOX$samples$lib_size <- as.factor(group_tags)
+
+#make density plots for counts before and after filtering out genes with low expression
+par(mfrow = c(1,1))
+lcpmz <- lcpm
+lcpm.cutoff <- log2(10/M + 2/L)
+nsamples <- ncol(counts)
+col.lib <- counts_FOX$samples$lib_size
+levels(col.lib) <- brewer.pal(nlevels(col.lib), "Set1")
+plot(density(lcpmz[,1]), col = as.character(col.lib[1]), lwd = 1, ylim = c(0, 0.4), las = 2, 
+     main = "", xlab = "")
+title(main = "A. Raw data", xlab = "Log-cpm")
+abline(v = lcpm.cutoff, lty = 3)
+for (i in 2:nsamples){
+  den <- density(lcpmz[,i])
+  lines(den$x, den$y, col = as.character(col.lib[i]), lwd = 1)
+}
+legend("topright",legend=levels(counts_FOX$samples$lib_size), col=levels(col.lib), pch=16, title ="Library size (millions)")
+lcpmy <- cpm(counts_FOX, log=TRUE)
+plot(density(lcpmy[,1]), col = as.character(col.lib[1]), lwd = 1, ylim = c(0, 0.4), las = 2, 
+     main = "", xlab = "")
+title(main = "B. Filtered data", xlab = "Log-cpm")
+abline(v = lcpm.cutoff, lty = 3)
+for (i in 2:nsamples){
+  den <- density(lcpmy[,i])
+  lines(den$x, den$y, col = as.character(col.lib[i]), lwd = 1)
+}
+legend("topright",legend=levels(counts_FOX$samples$lib_size), col=levels(col.lib), pch=16, title ="Library size (millions)" )
+```
+
+TMM normalisation was applied to account for any highly expressed genes monopolising the sequencing and to account for the underlying differences in the distributions of expressed transcripts between samples.
+
+```{r}
+#apply TMM normalisation
+norm_FOX <- calcNormFactors(counts_FOX, method = "TMM")
+```
+
+Although ~30 million reads per sample were obtained from the sequencing, effective library sizes varied from around 2 million reads to more than 10 million reads, with the median just under 7 million reads (A). This suggests we are only likely to capture the most abundant maternal RNAs. The range and distribution of expression values look fairly uniform between samples,  which is what we expect, and TMM normalisation further improves this.
+
+```{r expression-plot}
+dat <- data.frame(lib = norm_FOX$samples$lib.size,
+                  status = norm_FOX$samples$group,
+                  sample = colnames(norm_FOX))
+p1 <- ggplot(dat, aes(x = sample, y = lib, fill = status)) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Sample", y = "Library size",
+       fill = "Preeclampsia status", title = "A. Library size after filtering") +
+  geom_hline(yintercept = median(dat$lib), linetype = "dashed") +
+  scale_x_discrete(limits = dat$sample)
+
+dat <- reshape2::melt(cpm(norm_FOX, normalized.lib.sizes = FALSE, log = TRUE),
+                      value.name = "cpm")
+dat$status <- rep(norm_FOX$samples$group, each = nrow(norm_FOX))
+colnames(dat)[2] <- "sample"
+p2 <- ggplot(dat, aes(x = sample, y = cpm, fill = status)) +
+  geom_boxplot(show.legend = FALSE, outlier.size = 0.75) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7)) +
+  labs(x = "Sample", y = "Log-CPM",
+       fill = "Preeclampsia status", title = "B. Expression values after filtering") +
+  geom_hline(yintercept = median(dat$lib), linetype = "dashed")
+
+dat <- reshape2::melt(cpm(norm_FOX, normalized.lib.sizes = TRUE, log = TRUE),
+                      value.name = "cpm")
+
+dat$status <- rep(norm_FOX$samples$group, each = nrow(norm_FOX))
+colnames(dat)[2] <- "sample"
+p3 <- ggplot(dat, aes(x = sample, y = cpm, fill = status)) +
+  geom_boxplot(show.legend = FALSE, outlier.size = 0.75) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7)) +
+  labs(x = "Sample", y = "Log-CPM",
+       fill = "Preeclampsia status", title = "C. Expression values after normalisation") +
+  geom_hline(yintercept = median(dat$lib), linetype = "dashed")
+
+p1
+p2
+p3
+```
+
+Multi-dimensional scaling (MDS) plots show the largest sources of variation in the data. They are a good way of identifying structure in the data and exploring relationships between samples. The following plots examine the first four principle components coloured for known features of the data including preeclampsia status, fetal sex, collection site, diabates status, steroids and library size. The samples do not cluster by known features of the data, except library size. The lack of clustering by preeclampsia status in any of the first four principle components suggests we might not find any differentially expressed genes. The MDS plots suggest that the largest source of variation in the data is library size, as there is a strong trend towards increasingly smaller library sizes from left to right across the first dimension.
+
+```{r mds-plot}
+dims <- list(c(1,2), c(1,3), c(2,3), c(3,4))
+vars <- c("group", "sex", "site", "diabetes", "steroids", "lib_size")
+patches <- vector("list", length(vars))
+
+for(i in 1:length(vars)){
+  p <- vector("list", length(dims))
+  
+  for(j in 1:length(dims)){
+    mds <- plotMDS(cpm(norm_FOX, log = TRUE), top = 1000, gene.selection="common", 
+                   plot = FALSE, dim.plot = dims[[j]])
+    dat <- tibble::tibble(x = mds$x, y = mds$y,
+                          sample = samplenames,
+                          variable = pull(norm_FOX$samples, vars[i]))
+    
+    p[[j]] <- ggplot(dat, aes(x = x, y = y, colour = variable)) +
+      geom_text(aes(label = sample), size = 2.5) +
+      labs(x = glue::glue("Principal component {dims[[j]][1]}"), 
+           y = glue::glue("Principal component {dims[[j]][2]}"),
+           colour = vars[i])
+  }
+  
+  patches[[i]] <- wrap_elements(wrap_plots(p, ncol = 2, guides = "collect") +
+    plot_annotation(title = glue::glue("Coloured by: {vars[i]}")) &
+    theme(legend.position = "bottom"))
+  
+}
+
+patches
+```
+
+## Differential expression analysis
+
+Due to the variability in the data and the strong influence of library size, the TMM normalised data was transformed using `voomWithQualityWeights`. This takes into account the different library sizes and the mean variance relationship in the data and calculates sample-specific quality weights. Linear models were fit in `limma`, incorporating the `voom` weights. The samples from preeclamptic pregnancies were compared to those without preeclampsia. A summary of the number of differentially expressed genes (table 2) and their details (table 3) are shown below.
+
+```{r voom-output}
+#relevel the groups so that control is the reference
+group <- as.factor(norm_FOX$samples$group)
+group <- relevel(group, "None")
+
+#set up design matrix to test hypertension status
+design1 <- model.matrix(~group)
+colnames(design1) <- gsub("group", "", colnames(design1))
+rownames(design1) <- samplenames
+
+vwts <- voomWithQualityWeights(norm_FOX, design1, plot=TRUE)
+vfit <- lmFit(vwts, design1)
+vfit <- contrasts.fit(vfit, coef = 2)
+efit <- eBayes(vfit)
+
+kable_styling(kable(summary(decideTests(efit)), caption="Table 2: Number of differentially expressed genes"))
+
+top_table <- topTable(efit, n=1, sort.by = "P")
+kable_styling(kable(top_table[,c(3,5,6,9)], caption="Table 3: DE genes in preeclampsia compared to no hypertension"))
+```
+
+Volcano plot below shows the statistical significance versus the logFC of genes in the differential expression analysis, with only one gene, SERTAD2 with FDR < 0.05.
+
+```{r volcano-plot}
+topTable(efit, num = Inf) %>% 
+  mutate(sig = ifelse(adj.P.Val <= 0.05, "<= 0.05", "> 0.05")) -> dat
+
+ggplot(dat, aes(x = logFC, y = -log10(P.Value), color = sig)) +
+  geom_point(alpha = 0.75) +
+  ggrepel::geom_text_repel(data = subset(dat, adj.P.Val < 0.05), 
+            aes(x = logFC, y = -log10(P.Value), 
+                label = SYMBOL), 
+            size = 2, colour = "black", max.overlaps = 15) +
+  labs(x = expression(~log[2]~"(Fold Change)"), 
+       y = expression(~-log[10]~"(P-value)"),
+       colour = "FDR") +
+  scale_colour_brewer(palette = "Set1")
+```
+
+The following plot shows the expression of the differentially expressed gene for samples collected from women with preeclampsia versus those without. Despite the variability in the data and the lack of separation in the MDS plots, we were still able to detect one differentially expressed gene, although the expression values largely overlap.
+
+```{r SERTAD2-expression}
+dat <- reshape2::melt(cpm(norm_FOX, log = TRUE),
+                      value.name = "cpm")
+dat$group <- rep(norm_FOX$samples$group, each = nrow(norm_FOX))
+dat$gene <- rep(norm_FOX$genes$SYMBOL, ncol(norm_FOX))
+ggplot(data = subset(dat, dat$gene == top_table$SYMBOL), 
+       aes(x = group, y = cpm, colour = group)) +
+  geom_jitter(width = 0.25) +
+  stat_summary(fun = "mean", geom = "crossbar") +
+  labs(x = "Status", y = "log2 Norm. CPM", colour = "Status") +
+  ggtitle(top_table$SYMBOL) +
+  theme(plot.title = element_text(size = 8),
+        plot.subtitle = element_text(size = 7),
+        axis.title = element_text(size = 8),
+        axis.text.x = element_text(size = 7))
+```
+
+## Summary
+
+The results of this study were likely influenced by the small and quite variable effective library size, with only relatively highly expressed genes included in the analysis. RUVSeq normalisation was used to account for this and any other unknown variability in the data. We found only one differentially expressed gene in preeclampsia samples compared to samples without preeclampsia, which was SERTAD2.
+
+```{r, echo=TRUE}
+sessionInfo()
+```
