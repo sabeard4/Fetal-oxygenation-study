@@ -15,13 +15,22 @@
 
 <title>FOX Preeclampsia limma-voom Differential Expression Analysis</title>
 
-<script src="site_libs/header-attrs-2.4/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
@@ -50,14 +59,9 @@ div.section {
   div.column{display: inline-block; vertical-align: top; width: 50%;}
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
-      </style>
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -70,32 +74,8 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
+
 
 
 
@@ -105,10 +85,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -125,40 +101,16 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -186,7 +138,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -198,7 +150,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -208,11 +160,28 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.parent().addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -224,7 +193,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -350,7 +318,7 @@ div.tocify {
 
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -364,7 +332,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -396,7 +364,7 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
@@ -427,7 +395,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-09-07
+<strong>Last updated:</strong> 2022-09-27
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -518,16 +486,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomsabeard4Fetaloxygenationstudytree3204e0283205252ebfec26c33c903d786a451ce1targetblank3204e02a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/sabeard4/Fetal-oxygenation-study/tree/3204e0283205252ebfec26c33c903d786a451ce1" target="_blank">3204e02</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomsabeard4Fetaloxygenationstudytreeb4f08497019cf8c9634776160bfd699462eafa69targetblankb4f0849a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/sabeard4/Fetal-oxygenation-study/tree/b4f08497019cf8c9634776160bfd699462eafa69" target="_blank">b4f0849</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomsabeard4Fetaloxygenationstudytree3204e0283205252ebfec26c33c903d786a451ce1targetblank3204e02a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomsabeard4Fetaloxygenationstudytreeb4f08497019cf8c9634776160bfd699462eafa69targetblankb4f0849a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/sabeard4/Fetal-oxygenation-study/tree/3204e0283205252ebfec26c33c903d786a451ce1" target="_blank">3204e02</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/sabeard4/Fetal-oxygenation-study/tree/b4f08497019cf8c9634776160bfd699462eafa69" target="_blank">b4f0849</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -539,10 +507,23 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    analysis/.DS_Store
     Ignored:    data/.DS_Store
+    Ignored:    output/.DS_Store
 
 Untracked files:
+    Untracked:  data/FOX_REDCap_metadata.csv
     Untracked:  data/HK_genes.txt
+    Untracked:  data/MSigDB/
     Untracked:  data/sample_metadata.csv
+    Untracked:  output/camera_GO.csv
+    Untracked:  output/camera_c2.csv
+    Untracked:  output/camera_hallmark.csv
+    Untracked:  output/goana_all.csv
+    Untracked:  output/goana_treat.csv
+    Untracked:  output/voomQual.csv
+    Untracked:  output/voomQual_treat.csv
+
+Unstaged changes:
+    Modified:   analysis/FOX_PE_RUVSeq.Rmd
 
 </code></pre>
 <p>
@@ -581,6 +562,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/sabeard4/Fetal-oxygenation-study/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/FOX_PE_limma.html" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -975,6 +973,43 @@ for (i in 2:nsamples){
   lines(den$x, den$y, col=col[i], lwd=2)
 }</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/denisty-plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-denisty-plot-1">
+Past versions of denisty-plot-1.png
+</button>
+</p>
+<div id="fig-denisty-plot-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/denisty-plot-1.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>lcpm2 &lt;- cpm(counts_FOX, log=TRUE)
 plot(density(lcpm2[,1]), col=col[1], lwd=2, ylim=c(0,0.4), las=2, main=&quot;&quot;, xlab=&quot;&quot;)
 title(main=&quot;B. Filtered data&quot;, xlab=&quot;Log-cpm&quot;)
@@ -984,6 +1019,43 @@ for (i in 2:nsamples){
   lines(den$x, den$y, col=col[i], lwd=2)
 }</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/denisty-plot-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-denisty-plot-2">
+Past versions of denisty-plot-2.png
+</button>
+</p>
+<div id="fig-denisty-plot-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/denisty-plot-2.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>We suspected that effective library size might have been contributing to the lack of uniformity between samples in the density plots. Colouring the samples by effective library size showed that the distribution of counts was similar for samples with larger libraries (8-12 million reads) where two peaks were seen after filtering, one at logCPM ~-1.5 and one at 5 (B). Samples with smaller libraries tended to have a single peak between 0 and 3 log-CPM (B).</p>
 <pre class="r"><code>#create binds for effective samples size
 lib.size &lt;- counts_FOX$samples$lib.size
@@ -1017,6 +1089,43 @@ for (i in 2:nsamples){
 }
 legend(&quot;topright&quot;,legend=levels(counts_FOX$samples$lib_size), col=levels(col.lib), pch=16, title =&quot;Library size (millions)&quot;)</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/density-plot-coloured-lib.size-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-density-plot-coloured-lib.size-1">
+Past versions of density-plot-coloured-lib.size-1.png
+</button>
+</p>
+<div id="fig-density-plot-coloured-lib.size-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/density-plot-coloured-lib.size-1.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>lcpmy &lt;- cpm(counts_FOX, log=TRUE)
 plot(density(lcpmy[,1]), col = as.character(col.lib[1]), lwd = 1, ylim = c(0, 0.4), las = 2, 
      main = &quot;&quot;, xlab = &quot;&quot;)
@@ -1028,6 +1137,43 @@ for (i in 2:nsamples){
 }
 legend(&quot;topright&quot;,legend=levels(counts_FOX$samples$lib_size), col=levels(col.lib), pch=16, title =&quot;Library size (millions)&quot; )</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/density-plot-coloured-lib.size-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-density-plot-coloured-lib.size-2">
+Past versions of density-plot-coloured-lib.size-2.png
+</button>
+</p>
+<div id="fig-density-plot-coloured-lib.size-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/density-plot-coloured-lib.size-2.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>TMM normalisation was applied to account for any highly expressed genes monopolising the sequencing and to account for the underlying differences in the distributions of expressed transcripts between samples.</p>
 <pre class="r"><code>#apply TMM normalisation
 norm_FOX &lt;- calcNormFactors(counts_FOX, method = &quot;TMM&quot;)</code></pre>
@@ -1068,10 +1214,121 @@ p3 &lt;- ggplot(dat, aes(x = sample, y = cpm, fill = status)) +
 
 p1</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/expression-plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-expression-plot-1">
+Past versions of expression-plot-1.png
+</button>
+</p>
+<div id="fig-expression-plot-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/expression-plot-1.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p2</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/expression-plot-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-expression-plot-2">
+Past versions of expression-plot-2.png
+</button>
+</p>
+<div id="fig-expression-plot-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/expression-plot-2.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p3</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/expression-plot-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-expression-plot-3">
+Past versions of expression-plot-3.png
+</button>
+</p>
+<div id="fig-expression-plot-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/expression-plot-3.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Multi-dimensional scaling (MDS) plots show the largest sources of variation in the data. They are a good way of identifying structure in the data and exploring relationships between samples. The following plots examine the first four principle components coloured for known features of the data including preeclampsia status, fetal sex, collection site, diabates status, steroids and library size. The samples do not cluster by known features of the data, except library size. The lack of clustering by preeclampsia status in any of the first four principle components suggests we might not find any differentially expressed genes. The MDS plots suggest that the largest source of variation in the data is library size, as there is a strong trend towards increasingly smaller library sizes from left to right across the first dimension.</p>
 <pre class="r"><code>dims &lt;- list(c(1,2), c(1,3), c(2,3), c(3,4))
 vars &lt;- c(&quot;group&quot;, &quot;sex&quot;, &quot;site&quot;, &quot;diabetes&quot;, &quot;steroids&quot;, &quot;lib_size&quot;)
@@ -1103,21 +1360,243 @@ for(i in 1:length(vars)){
 patches</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/mds-plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mds-plot-1">
+Past versions of mds-plot-1.png
+</button>
+</p>
+<div id="fig-mds-plot-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/mds-plot-1.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/mds-plot-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mds-plot-2">
+Past versions of mds-plot-2.png
+</button>
+</p>
+<div id="fig-mds-plot-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/mds-plot-2.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/mds-plot-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mds-plot-3">
+Past versions of mds-plot-3.png
+</button>
+</p>
+<div id="fig-mds-plot-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/mds-plot-3.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/mds-plot-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mds-plot-4">
+Past versions of mds-plot-4.png
+</button>
+</p>
+<div id="fig-mds-plot-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/mds-plot-4.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/mds-plot-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mds-plot-5">
+Past versions of mds-plot-5.png
+</button>
+</p>
+<div id="fig-mds-plot-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/mds-plot-5.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/mds-plot-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mds-plot-6">
+Past versions of mds-plot-6.png
+</button>
+</p>
+<div id="fig-mds-plot-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/mds-plot-6.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="differential-expression-analysis" class="section level2">
 <h2>Differential expression analysis</h2>
@@ -1133,6 +1612,43 @@ rownames(design1) &lt;- samplenames
 
 vwts &lt;- voomWithQualityWeights(norm_FOX, design1, plot=TRUE)</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/voom-output-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-voom-output-1">
+Past versions of voom-output-1.png
+</button>
+</p>
+<div id="fig-voom-output-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/voom-output-1.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>vfit &lt;- lmFit(vwts, design1)
 vfit &lt;- contrasts.fit(vfit, coef = 2)
 efit &lt;- eBayes(vfit)
@@ -1237,6 +1753,43 @@ ggplot(dat, aes(x = logFC, y = -log10(P.Value), color = sig)) +
        colour = &quot;FDR&quot;) +
   scale_colour_brewer(palette = &quot;Set1&quot;)</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/volcano-plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-volcano-plot-1">
+Past versions of volcano-plot-1.png
+</button>
+</p>
+<div id="fig-volcano-plot-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/volcano-plot-1.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>The following plot shows the expression of the differentially expressed gene for samples collected from women with preeclampsia versus those without. Despite the variability in the data and the lack of separation in the MDS plots, we were still able to detect one differentially expressed gene, although the expression values largely overlap.</p>
 <pre class="r"><code>dat &lt;- reshape2::melt(cpm(norm_FOX, log = TRUE),
                       value.name = &quot;cpm&quot;)
@@ -1253,6 +1806,43 @@ ggplot(data = subset(dat, dat$gene == top_table$SYMBOL),
         axis.title = element_text(size = 8),
         axis.text.x = element_text(size = 7))</code></pre>
 <p><img src="figure/FOX_PE_limma.Rmd/SERTAD2-expression-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-SERTAD2-expression-1">
+Past versions of SERTAD2-expression-1.png
+</button>
+</p>
+<div id="fig-SERTAD2-expression-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/a37d70a8d367ae476421f1fc27d7d69ae1360a31/docs/figure/FOX_PE_limma.Rmd/SERTAD2-expression-1.png" target="_blank">a37d70a</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="summary" class="section level2">
 <h2>Summary</h2>
@@ -1276,9 +1866,9 @@ attached base packages:
 other attached packages:
  [1] ggrepel_0.9.1                          
  [2] here_1.0.1                             
- [3] NMF_0.23.0                             
- [4] cluster_2.1.0                          
- [5] rngtools_1.5                           
+ [3] NMF_0.24.0                             
+ [4] cluster_2.1.2                          
+ [5] rngtools_1.5.2                         
  [6] pkgmaker_0.32.2                        
  [7] registry_0.5-1                         
  [8] patchwork_1.1.2                        
@@ -1290,15 +1880,15 @@ other attached packages:
 [14] GenomicFeatures_1.38.2                 
 [15] AnnotationDbi_1.48.0                   
 [16] kableExtra_1.3.4                       
-[17] knitr_1.30                             
-[18] tableone_0.13.0                        
-[19] RColorBrewer_1.1-2                     
+[17] knitr_1.40                             
+[18] tableone_0.13.2                        
+[19] RColorBrewer_1.1-3                     
 [20] EDASeq_2.20.0                          
 [21] ShortRead_1.44.3                       
 [22] GenomicAlignments_1.22.1               
 [23] SummarizedExperiment_1.16.1            
 [24] DelayedArray_0.12.3                    
-[25] matrixStats_0.57.0                     
+[25] matrixStats_0.62.0                     
 [26] Rsamtools_2.2.3                        
 [27] GenomicRanges_1.38.0                   
 [28] GenomeInfoDb_1.22.1                    
@@ -1309,61 +1899,65 @@ other attached packages:
 [33] BiocParallel_1.20.1                    
 [34] Biobase_2.46.0                         
 [35] BiocGenerics_0.32.0                    
-[36] forcats_0.5.0                          
-[37] stringr_1.4.0                          
-[38] dplyr_1.0.2                            
+[36] forcats_0.5.2                          
+[37] stringr_1.4.1                          
+[38] dplyr_1.0.10                           
 [39] purrr_0.3.4                            
-[40] readr_1.4.0                            
-[41] tidyr_1.1.2                            
-[42] tibble_3.0.3                           
-[43] ggplot2_3.3.2                          
-[44] tidyverse_1.3.0                        
+[40] readr_2.1.2                            
+[41] tidyr_1.2.1                            
+[42] tibble_3.1.8                           
+[43] ggplot2_3.3.6                          
+[44] tidyverse_1.3.2                        
 [45] edgeR_3.28.1                           
 [46] Glimma_1.14.0                          
 [47] limma_3.42.2                           
 [48] workflowr_1.7.0                        
 
 loaded via a namespace (and not attached):
-  [1] R.utils_2.10.1         tidyselect_1.1.0       RSQLite_2.2.1         
-  [4] grid_3.6.1             DESeq_1.38.0           munsell_0.5.0         
-  [7] codetools_0.2-16       withr_2.3.0            colorspace_1.4-1      
- [10] highr_0.8              rstudioapi_0.11        labeling_0.3          
- [13] git2r_0.27.1           GenomeInfoDbData_1.2.2 hwriter_1.3.2         
- [16] farver_2.0.3           bit64_4.0.5            rprojroot_2.0.3       
- [19] vctrs_0.3.4            generics_0.0.2         xfun_0.18             
- [22] BiocFileCache_1.10.2   R6_2.4.1               doParallel_1.0.17     
- [25] locfit_1.5-9.4         bitops_1.0-6           assertthat_0.2.1      
- [28] promises_1.1.1         scales_1.1.1           gtable_0.3.0          
- [31] processx_3.7.0         rlang_0.4.7            genefilter_1.68.0     
- [34] systemfonts_1.0.4      splines_3.6.1          rtracklayer_1.46.0    
- [37] broom_0.7.1            BiocManager_1.30.10    yaml_2.2.1            
- [40] reshape2_1.4.4         modelr_0.1.8           backports_1.1.10      
- [43] httpuv_1.5.4           RBGL_1.62.1            tools_3.6.1           
- [46] gridBase_0.4-7         ellipsis_0.3.1         Rcpp_1.0.5            
- [49] plyr_1.8.6             progress_1.2.2         zlibbioc_1.32.0       
- [52] RCurl_1.98-1.2         ps_1.3.4               prettyunits_1.1.1     
- [55] openssl_1.4.3          zoo_1.8-8              haven_2.3.1           
- [58] fs_1.5.0               survey_4.1-1           magrittr_1.5          
- [61] reprex_0.3.0           whisker_0.4            aroma.light_3.16.0    
- [64] hms_0.5.3              evaluate_0.14          xtable_1.8-4          
- [67] XML_3.99-0.3           jpeg_0.1-8.1           readxl_1.3.1          
- [70] compiler_3.6.1         biomaRt_2.42.1         crayon_1.3.4          
- [73] R.oo_1.24.0            htmltools_0.5.0        later_1.1.0.1         
- [76] geneplotter_1.64.0     lubridate_1.7.9        DBI_1.1.0             
- [79] dbplyr_1.4.4           MASS_7.3-53            rappdirs_0.3.1        
- [82] Matrix_1.2-18          cli_2.0.2              mitools_2.4           
- [85] R.methodsS3_1.8.1      pkgconfig_2.0.3        getPass_0.2-2         
- [88] xml2_1.3.2             foreach_1.5.0          svglite_2.1.0         
- [91] annotate_1.64.0        webshot_0.5.2          rvest_0.3.6           
- [94] callr_3.7.2            digest_0.6.25          graph_1.64.0          
- [97] rmarkdown_2.4          cellranger_1.1.0       curl_4.3              
-[100] lifecycle_0.2.0        jsonlite_1.7.1         viridisLite_0.3.0     
-[103] askpass_1.1            fansi_0.4.1            labelled_2.7.0        
-[106] pillar_1.4.6           lattice_0.20-41        httr_1.4.2            
-[109] survival_3.2-7         glue_1.4.2             png_0.1-7             
-[112] iterators_1.0.12       bit_4.0.4              class_7.3-17          
-[115] stringi_1.5.3          blob_1.2.1             latticeExtra_0.6-29   
-[118] memoise_1.1.0          e1071_1.7-3           </code></pre>
+  [1] utf8_1.2.2             R.utils_2.12.0         tidyselect_1.1.2      
+  [4] RSQLite_2.2.17         grid_3.6.1             DESeq_1.38.0          
+  [7] munsell_0.5.0          codetools_0.2-18       interp_1.0-33         
+ [10] withr_2.5.0            colorspace_2.0-3       highr_0.9             
+ [13] rstudioapi_0.14        labeling_0.4.2         git2r_0.30.1          
+ [16] GenomeInfoDbData_1.2.2 hwriter_1.3.2.1        farver_2.1.1          
+ [19] bit64_4.0.5            rprojroot_2.0.3        vctrs_0.4.1           
+ [22] generics_0.1.3         xfun_0.33              BiocFileCache_1.10.2  
+ [25] R6_2.5.1               doParallel_1.0.17      locfit_1.5-9.4        
+ [28] bitops_1.0-7           cachem_1.0.6           assertthat_0.2.1      
+ [31] promises_1.2.0.1       scales_1.2.1           googlesheets4_1.0.1   
+ [34] gtable_0.3.1           processx_3.7.0         rlang_1.0.6           
+ [37] genefilter_1.68.0      systemfonts_1.0.4      splines_3.6.1         
+ [40] rtracklayer_1.46.0     gargle_1.2.1           broom_1.0.1           
+ [43] BiocManager_1.30.18    yaml_2.3.5             reshape2_1.4.4        
+ [46] modelr_0.1.9           backports_1.4.1        httpuv_1.6.6          
+ [49] RBGL_1.62.1            tools_3.6.1            gridBase_0.4-7        
+ [52] ellipsis_0.3.2         jquerylib_0.1.4        proxy_0.4-27          
+ [55] Rcpp_1.0.9             plyr_1.8.7             progress_1.2.2        
+ [58] zlibbioc_1.32.0        RCurl_1.98-1.8         ps_1.7.1              
+ [61] prettyunits_1.1.1      openssl_2.0.3          deldir_1.0-6          
+ [64] zoo_1.8-11             haven_2.5.1            fs_1.5.2              
+ [67] survey_4.1-1           magrittr_2.0.3         reprex_2.0.2          
+ [70] googledrive_2.0.0      whisker_0.4            aroma.light_3.16.0    
+ [73] hms_1.1.2              evaluate_0.16          xtable_1.8-4          
+ [76] XML_3.99-0.3           jpeg_0.1-9             readxl_1.4.1          
+ [79] compiler_3.6.1         biomaRt_2.42.1         crayon_1.5.1          
+ [82] R.oo_1.25.0            htmltools_0.5.3        later_1.3.0           
+ [85] tzdb_0.3.0             geneplotter_1.64.0     lubridate_1.8.0       
+ [88] DBI_1.1.3              dbplyr_2.2.1           MASS_7.3-58.1         
+ [91] rappdirs_0.3.3         Matrix_1.3-4           cli_3.4.1             
+ [94] mitools_2.4            R.methodsS3_1.8.2      pkgconfig_2.0.3       
+ [97] getPass_0.2-2          xml2_1.3.3             foreach_1.5.2         
+[100] svglite_2.1.0          annotate_1.64.0        bslib_0.4.0           
+[103] webshot_0.5.4          rvest_1.0.3            callr_3.7.2           
+[106] digest_0.6.29          graph_1.64.0           rmarkdown_2.16        
+[109] cellranger_1.1.0       curl_4.3.2             lifecycle_1.0.2       
+[112] jsonlite_1.8.0         viridisLite_0.4.1      askpass_1.1           
+[115] fansi_1.0.3            labelled_2.10.0        pillar_1.8.1          
+[118] lattice_0.20-45        fastmap_1.1.0          httr_1.4.4            
+[121] survival_3.4-0         glue_1.6.2             png_0.1-7             
+[124] iterators_1.0.14       bit_4.0.4              class_7.3-20          
+[127] stringi_1.7.8          sass_0.4.2             blob_1.2.3            
+[130] latticeExtra_0.6-30    memoise_2.0.1          e1071_1.7-11          </code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1390,9 +1984,9 @@ attached base packages:
 other attached packages:
  [1] ggrepel_0.9.1                          
  [2] here_1.0.1                             
- [3] NMF_0.23.0                             
- [4] cluster_2.1.0                          
- [5] rngtools_1.5                           
+ [3] NMF_0.24.0                             
+ [4] cluster_2.1.2                          
+ [5] rngtools_1.5.2                         
  [6] pkgmaker_0.32.2                        
  [7] registry_0.5-1                         
  [8] patchwork_1.1.2                        
@@ -1404,15 +1998,15 @@ other attached packages:
 [14] GenomicFeatures_1.38.2                 
 [15] AnnotationDbi_1.48.0                   
 [16] kableExtra_1.3.4                       
-[17] knitr_1.30                             
-[18] tableone_0.13.0                        
-[19] RColorBrewer_1.1-2                     
+[17] knitr_1.40                             
+[18] tableone_0.13.2                        
+[19] RColorBrewer_1.1-3                     
 [20] EDASeq_2.20.0                          
 [21] ShortRead_1.44.3                       
 [22] GenomicAlignments_1.22.1               
 [23] SummarizedExperiment_1.16.1            
 [24] DelayedArray_0.12.3                    
-[25] matrixStats_0.57.0                     
+[25] matrixStats_0.62.0                     
 [26] Rsamtools_2.2.3                        
 [27] GenomicRanges_1.38.0                   
 [28] GenomeInfoDb_1.22.1                    
@@ -1423,61 +2017,65 @@ other attached packages:
 [33] BiocParallel_1.20.1                    
 [34] Biobase_2.46.0                         
 [35] BiocGenerics_0.32.0                    
-[36] forcats_0.5.0                          
-[37] stringr_1.4.0                          
-[38] dplyr_1.0.2                            
+[36] forcats_0.5.2                          
+[37] stringr_1.4.1                          
+[38] dplyr_1.0.10                           
 [39] purrr_0.3.4                            
-[40] readr_1.4.0                            
-[41] tidyr_1.1.2                            
-[42] tibble_3.0.3                           
-[43] ggplot2_3.3.2                          
-[44] tidyverse_1.3.0                        
+[40] readr_2.1.2                            
+[41] tidyr_1.2.1                            
+[42] tibble_3.1.8                           
+[43] ggplot2_3.3.6                          
+[44] tidyverse_1.3.2                        
 [45] edgeR_3.28.1                           
 [46] Glimma_1.14.0                          
 [47] limma_3.42.2                           
 [48] workflowr_1.7.0                        
 
 loaded via a namespace (and not attached):
-  [1] R.utils_2.10.1         tidyselect_1.1.0       RSQLite_2.2.1         
-  [4] grid_3.6.1             DESeq_1.38.0           munsell_0.5.0         
-  [7] codetools_0.2-16       withr_2.3.0            colorspace_1.4-1      
- [10] highr_0.8              rstudioapi_0.11        labeling_0.3          
- [13] git2r_0.27.1           GenomeInfoDbData_1.2.2 hwriter_1.3.2         
- [16] farver_2.0.3           bit64_4.0.5            rprojroot_2.0.3       
- [19] vctrs_0.3.4            generics_0.0.2         xfun_0.18             
- [22] BiocFileCache_1.10.2   R6_2.4.1               doParallel_1.0.17     
- [25] locfit_1.5-9.4         bitops_1.0-6           assertthat_0.2.1      
- [28] promises_1.1.1         scales_1.1.1           gtable_0.3.0          
- [31] processx_3.7.0         rlang_0.4.7            genefilter_1.68.0     
- [34] systemfonts_1.0.4      splines_3.6.1          rtracklayer_1.46.0    
- [37] broom_0.7.1            BiocManager_1.30.10    yaml_2.2.1            
- [40] reshape2_1.4.4         modelr_0.1.8           backports_1.1.10      
- [43] httpuv_1.5.4           RBGL_1.62.1            tools_3.6.1           
- [46] gridBase_0.4-7         ellipsis_0.3.1         Rcpp_1.0.5            
- [49] plyr_1.8.6             progress_1.2.2         zlibbioc_1.32.0       
- [52] RCurl_1.98-1.2         ps_1.3.4               prettyunits_1.1.1     
- [55] openssl_1.4.3          zoo_1.8-8              haven_2.3.1           
- [58] fs_1.5.0               survey_4.1-1           magrittr_1.5          
- [61] reprex_0.3.0           whisker_0.4            aroma.light_3.16.0    
- [64] hms_0.5.3              evaluate_0.14          xtable_1.8-4          
- [67] XML_3.99-0.3           jpeg_0.1-8.1           readxl_1.3.1          
- [70] compiler_3.6.1         biomaRt_2.42.1         crayon_1.3.4          
- [73] R.oo_1.24.0            htmltools_0.5.0        later_1.1.0.1         
- [76] geneplotter_1.64.0     lubridate_1.7.9        DBI_1.1.0             
- [79] dbplyr_1.4.4           MASS_7.3-53            rappdirs_0.3.1        
- [82] Matrix_1.2-18          cli_2.0.2              mitools_2.4           
- [85] R.methodsS3_1.8.1      pkgconfig_2.0.3        getPass_0.2-2         
- [88] xml2_1.3.2             foreach_1.5.0          svglite_2.1.0         
- [91] annotate_1.64.0        webshot_0.5.2          rvest_0.3.6           
- [94] callr_3.7.2            digest_0.6.25          graph_1.64.0          
- [97] rmarkdown_2.4          cellranger_1.1.0       curl_4.3              
-[100] lifecycle_0.2.0        jsonlite_1.7.1         viridisLite_0.3.0     
-[103] askpass_1.1            fansi_0.4.1            labelled_2.7.0        
-[106] pillar_1.4.6           lattice_0.20-41        httr_1.4.2            
-[109] survival_3.2-7         glue_1.4.2             png_0.1-7             
-[112] iterators_1.0.12       bit_4.0.4              class_7.3-17          
-[115] stringi_1.5.3          blob_1.2.1             latticeExtra_0.6-29   
-[118] memoise_1.1.0          e1071_1.7-3           </code></pre>
+  [1] utf8_1.2.2             R.utils_2.12.0         tidyselect_1.1.2      
+  [4] RSQLite_2.2.17         grid_3.6.1             DESeq_1.38.0          
+  [7] munsell_0.5.0          codetools_0.2-18       interp_1.0-33         
+ [10] withr_2.5.0            colorspace_2.0-3       highr_0.9             
+ [13] rstudioapi_0.14        labeling_0.4.2         git2r_0.30.1          
+ [16] GenomeInfoDbData_1.2.2 hwriter_1.3.2.1        farver_2.1.1          
+ [19] bit64_4.0.5            rprojroot_2.0.3        vctrs_0.4.1           
+ [22] generics_0.1.3         xfun_0.33              BiocFileCache_1.10.2  
+ [25] R6_2.5.1               doParallel_1.0.17      locfit_1.5-9.4        
+ [28] bitops_1.0-7           cachem_1.0.6           assertthat_0.2.1      
+ [31] promises_1.2.0.1       scales_1.2.1           googlesheets4_1.0.1   
+ [34] gtable_0.3.1           processx_3.7.0         rlang_1.0.6           
+ [37] genefilter_1.68.0      systemfonts_1.0.4      splines_3.6.1         
+ [40] rtracklayer_1.46.0     gargle_1.2.1           broom_1.0.1           
+ [43] BiocManager_1.30.18    yaml_2.3.5             reshape2_1.4.4        
+ [46] modelr_0.1.9           backports_1.4.1        httpuv_1.6.6          
+ [49] RBGL_1.62.1            tools_3.6.1            gridBase_0.4-7        
+ [52] ellipsis_0.3.2         jquerylib_0.1.4        proxy_0.4-27          
+ [55] Rcpp_1.0.9             plyr_1.8.7             progress_1.2.2        
+ [58] zlibbioc_1.32.0        RCurl_1.98-1.8         ps_1.7.1              
+ [61] prettyunits_1.1.1      openssl_2.0.3          deldir_1.0-6          
+ [64] zoo_1.8-11             haven_2.5.1            fs_1.5.2              
+ [67] survey_4.1-1           magrittr_2.0.3         reprex_2.0.2          
+ [70] googledrive_2.0.0      whisker_0.4            aroma.light_3.16.0    
+ [73] hms_1.1.2              evaluate_0.16          xtable_1.8-4          
+ [76] XML_3.99-0.3           jpeg_0.1-9             readxl_1.4.1          
+ [79] compiler_3.6.1         biomaRt_2.42.1         crayon_1.5.1          
+ [82] R.oo_1.25.0            htmltools_0.5.3        later_1.3.0           
+ [85] tzdb_0.3.0             geneplotter_1.64.0     lubridate_1.8.0       
+ [88] DBI_1.1.3              dbplyr_2.2.1           MASS_7.3-58.1         
+ [91] rappdirs_0.3.3         Matrix_1.3-4           cli_3.4.1             
+ [94] mitools_2.4            R.methodsS3_1.8.2      pkgconfig_2.0.3       
+ [97] getPass_0.2-2          xml2_1.3.3             foreach_1.5.2         
+[100] svglite_2.1.0          annotate_1.64.0        bslib_0.4.0           
+[103] webshot_0.5.4          rvest_1.0.3            callr_3.7.2           
+[106] digest_0.6.29          graph_1.64.0           rmarkdown_2.16        
+[109] cellranger_1.1.0       curl_4.3.2             lifecycle_1.0.2       
+[112] jsonlite_1.8.0         viridisLite_0.4.1      askpass_1.1           
+[115] fansi_1.0.3            labelled_2.10.0        pillar_1.8.1          
+[118] lattice_0.20-45        fastmap_1.1.0          httr_1.4.4            
+[121] survival_3.4-0         glue_1.6.2             png_0.1-7             
+[124] iterators_1.0.14       bit_4.0.4              class_7.3-20          
+[127] stringi_1.7.8          sass_0.4.2             blob_1.2.3            
+[130] latticeExtra_0.6-30    memoise_2.0.1          e1071_1.7-11          </code></pre>
 </div>
 </div>
 
@@ -1506,7 +2104,7 @@ footer is added to webpages before the MathJax javascript. -->
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
@@ -1524,7 +2122,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
@@ -1533,6 +2131,9 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
 
     // move toc-ignore selectors from section div to header
     $('div.section.toc-ignore')
