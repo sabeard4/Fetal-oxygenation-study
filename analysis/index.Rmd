@@ -10,19 +10,25 @@ editor_options:
 
 ## Transcriptomic analysis of circulating RNA from the maternal blood of women with preterm growth restricted pregnancies
 
-This site contains the analysis of RNA-seq data generated from maternal blood collected into PAXgene tubes. Blood was collected from women prior to delivery for preterm fetal growth restriction. Gene expression differences in the maternal blood between women with and without preeclampsia were identified using two methods limma-voom and REVSeq-edgeR. Both methods yielded the same result. Follow the links below to explore different aspects of the analysis.
+This site contains the analysis of RNA-seq data generated from maternal blood collected into PAXgene tubes. Blood was collected from women prior to delivery for preterm fetal growth restriction. Blood was also collected from women during healthy pregnancies at 28 and 32 weeks as controls. Gene expression differences in the maternal blood between these two groups of women were identified using limma-voom.
+
+Gene expression differences in the maternal blood of cases only, between women with and without preeclampsia were identified using two methods limma-voom and RUVSeq-edgeR. Both methods yielded the same result. Follow the links below to explore different aspects of the analysis.
 
 ### Mapping based DGE analysis
 
 * Read mapping, counting and quality control
   * [MultiQC Report](multiqc_report.html): Mapping and quality statistics
 
-### limma-voom
+### Case-control limma-voom
+* DGE analysis
+  * [DGE results](FOX_limma.html): Exploratory data analysis and DGE analysis comparing preterm samples between cases and controls using [limma](https://bioconductor.org/packages/release/bioc/html/limma.html)
+
+### Preeclampsia limma-voom
 
 * DGE analysis
   * [DGE results](FOX_PE_limma.html): Exploratory data analysis and DGE analysis comparing preterm samples with and without preeclampsia using [limma](https://bioconductor.org/packages/release/bioc/html/limma.html)
   
-### RUVSeq-edgeR
+### Preeclampsia RUVSeq-edgeR
 
 * DGE analysis
   * [DGE results](FOX_PE_RUVSeq.html): Exploratory data analysis and DGE analysis using [RUVSeq](https://bioconductor.org/packages/release/bioc/html/RUVSeq.html) to remove unwanted variation followed by [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html) comparing preterm samples with and without preeclampsia
