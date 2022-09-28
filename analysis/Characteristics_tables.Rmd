@@ -1,0 +1,155 @@
+---
+title: "Patient characteristics tables and analysis for SERTAD2 qPCR"
+author: "Sally Beard"
+date: "2022-09-28"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+This document contains code for generating characteristics tables for qPCRs run for the FOX study, as well as some statistical tests investigating SERTAD2 expression.
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+```{r}
+#import required libraries
+library(tidyverse)
+library(tableone)
+library(kableExtra)
+library(rms)
+library(interactionRCS)
+```
+
+## Table of characteristics for all TB placenta samples
+
+Import metadata and qPCR results for SERTAD2 and reference genes (geometric mean of CYC1 and TOP1) from placenta RNA
+
+```{r}
+metadata <- read.csv("./data/TB_placenta_SERTAD2_metadata.csv")
+```
+
+Make a characteristics table
+
+```{r}
+#create a variable list
+vars <- c("Maternal_age", "BMI", "Diabetes", "Gestation_wks", "Birthweight", "Centile", "Fetal_sex", "Systolic_BP", "Diastolic_BP", "Parity", "Smoking")
+
+#create table stratified by condition
+tableOne <- CreateTableOne(vars = vars, strata = "category_3", data = metadata, testNonNormal = kruskal.test)
+kable_styling(kableone(tableOne, caption="Table 1: Patient characteristics for samples included in tissue bank placental qPCR across all gestations", nonnormal = c("Birthweight_centile", "Cord_blood_pH", "BMI"), varLabels = TRUE, dropEqual = TRUE))
+```
+```{r, results = FALSE}
+table <- print(tableOne, nonnormal = c("Birthweight_centile", "Cord_blood_pH", "BMI"), exact = "stage", quote = FALSE, noSpaces = TRUE)
+write.csv(table, "output/TB_placenta_characteristics.csv")
+```
+
+## qPCR results for all TB placenta samples
+
+To test whether SERTAD2 is altered in diseased placenta an additive linear model was applied, which adjusted for gestation using a restricted cubic spline with four knots.
+
+```{r}
+model_out <- glm(deltaSERTAD2 ~ rcs(Gestation_days) + category_3, data=metadata)
+dd <-datadist(metadata)
+options(datadist="dd")
+summary(model_out)
+```
+
+The expression of SERTAD2 did not significantly differ from control in IUGR alone, PE_IUGR or PE alone placentas across all gestations tested, after adjusting for gestational age. The confidence intervals for the coefficients are shown below.
+
+```{r}
+model_out <- ols(deltaSERTAD2 ~ rcs(Gestation_days) + category_3, data=metadata)
+summary(model_out, category_3 = "Control")
+```
+
+## Table of characteristics for TB placenta samples <34 weeks
+
+Subset the data to just include samples <=34+0 weeks
+
+```{r}
+metadata_preterm <- metadata %>% filter(Gestation_wks <= 34)
+```
+
+Make a characteristics table
+
+```{r}
+#create table stratified by condition
+tableOne <- CreateTableOne(vars = vars, strata = "category_3", data = metadata_preterm, testNonNormal = kruskal.test)
+kable_styling(kableone(tableOne, caption="Table 2: Patient characteristics for samples included in tissue bank placental qPCR <=34+0 weeks", nonnormal = c("Birthweight_centile", "Cord_blood_pH", "BMI"), varLabels = TRUE, dropEqual = TRUE))
+```
+```{r, results = FALSE}
+table <- print(tableOne, nonnormal = c("Birthweight_centile", "Cord_blood_pH", "BMI"), exact = "stage", quote = FALSE, noSpaces = TRUE)
+write.csv(table, "output/TB_placenta_characteristics_preterm.csv")
+```
+
+## qPCR results for TB placenta samples <34 weeks
+
+To test whether SERTAD2 is altered in preterm diseased placenta an additive linear model was applied, which adjusted for gestation using a restricted cubic spline with four knots.
+
+```{r}
+model_out <- glm(deltaSERTAD2 ~ rcs(Gestation_days) + category_3, data=metadata_preterm)
+dd <-datadist(metadata)
+options(datadist="dd")
+summary(model_out)
+```
+
+The expression of SERTAD2 did not significantly differ from control in IUGR alone or PE_IUGR, but PE alone was significantly higher than control placentas, after adjusting for gestational age. The confidence intervals for the coefficients are shown below.
+
+```{r}
+model_out <- ols(deltaSERTAD2 ~ rcs(Gestation_days) + category_3, data=metadata)
+summary(model_out, category_3 = "Control")
+```
+
+Since we identified SERTAD2 in the FOX study from comparing blood from women with preterm growth restricted fetuses with and without preeclampsia, next we tested whether there was a difference in the expression level of SERTAD2 between these two groups.
+
+```{r}
+model_out <- ols(deltaSERTAD2 ~ rcs(Gestation_days) + category_3, data=metadata)
+summary(model_out, category_3 = "IUGR")
+```
+
+The confidence interval for the comparison between PE_IUGR and PE overlaps 0, indicating that there is not a significant difference in SERTAD2 expression between these two groups.
+
+## Table of characteristics for all TB PAX samples
+
+Import metadata and qPCR results for SERTAD2 and reference genes (geometric mean of B2M, GUSB and YWHAZ) from RNA isolated from maternal blood collected into PAXgene tubes.
+
+```{r}
+metadata_PAX <- read.csv("./data/TB_PAX_SERTAD2_metadata.csv")
+```
+
+Make a characteristics table
+
+```{r}
+#create a variable list
+vars <- c("Maternal_age", "BMI", "Diabetes", "GA_collection", "GA_delivery", "Birthweight", "Centile", "Fetal_sex", "Systolic_BP", "Diastolic_BP", "Parity", "Smoking")
+
+#create table stratified by condition
+tableOne <- CreateTableOne(vars = vars, strata = "Category_2", data = metadata_PAX, testNonNormal = kruskal.test)
+kable_styling(kableone(tableOne, caption="Table 3: Patient characteristics for samples included in tissue bank PAX qPCR across all gestations", nonnormal = c( "BMI"), varLabels = TRUE, dropEqual = TRUE))
+```
+```{r, results = FALSE}
+table <- print(tableOne, nonnormal = c( "BMI"), exact = "stage", quote = FALSE, noSpaces = TRUE)
+write.csv(table, "output/PAX_characteristics.csv")
+```
+
+## qPCR results for all PAX placenta samples
+
+To test whether SERTAD2 is altered in PAX RNA collected from maternal blood, an additive linear model was applied, which adjusted for gestation using a restricted cubic spline with four knots.
+
+```{r}
+model_out <- glm(deltaSERTAD2 ~ rcs(GA_collection) + Category_2, data=metadata_PAX)
+dd <-datadist(metadata_PAX)
+options(datadist="dd")
+summary(model_out)
+```
+
+The expression of SERTAD2 did not significantly differ from control in IUGR alone, PE_IUGR or PE alone PAX across all gestations tested, after adjusting for gestational age. The confidence intervals for the coefficients are shown below.
+
+```{r}
+model_out <- ols(deltaSERTAD2 ~ rcs(GA_collection) + Category_2, data=metadata_PAX)
+summary(model_out, Category_2 = "Control")
+```
