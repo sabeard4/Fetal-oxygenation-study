@@ -1,0 +1,2910 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Sally Beard" />
+
+<meta name="date" content="2022-09-28" />
+
+<title>Patient characteristics tables and analysis for SERTAD2 qPCR</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Fetal-oxygenation-study</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/sabeard4/Fetal-oxygenation-study">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Patient characteristics tables and analysis for SERTAD2 qPCR</h1>
+<h4 class="author">Sally Beard</h4>
+<h4 class="date">2022-09-28</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-09-29
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>Fetal-oxygenation-study/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version 1.7.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20220826code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20220826)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20220826code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20220826)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomsabeard4Fetaloxygenationstudytree4df9b876fea04f055257fad58bd770cb4f266155targetblank4df9b87a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/sabeard4/Fetal-oxygenation-study/tree/4df9b876fea04f055257fad58bd770cb4f266155" target="_blank">4df9b87</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomsabeard4Fetaloxygenationstudytree4df9b876fea04f055257fad58bd770cb4f266155targetblank4df9b87a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/sabeard4/Fetal-oxygenation-study/tree/4df9b876fea04f055257fad58bd770cb4f266155" target="_blank">4df9b87</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .RData
+    Ignored:    .Rhistory
+    Ignored:    analysis/.DS_Store
+    Ignored:    data/.DS_Store
+    Ignored:    output/.DS_Store
+
+Untracked files:
+    Untracked:  data/HK_genes.txt
+    Untracked:  output/PAX_characteristics.csv
+    Untracked:  output/TB_placenta_characteristics.csv
+    Untracked:  output/TB_placenta_characteristics_preterm.csv
+
+Unstaged changes:
+    Modified:   analysis/FOX_PE_RUVSeq.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/Characteristics_tables.Rmd</code>) and HTML (<code>docs/Characteristics_tables.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/sabeard4/Fetal-oxygenation-study/blob/4df9b876fea04f055257fad58bd770cb4f266155/analysis/Characteristics_tables.Rmd" target="_blank">4df9b87</a>
+</td>
+<td>
+Sally Beard
+</td>
+<td>
+2022-09-29
+</td>
+<td>
+Characteristics for qPCR data
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This document contains code for generating characteristics tables for qPCRs run for the FOX study, as well as some statistical tests investigating SERTAD2 expression.</p>
+<pre class="r"><code>#import required libraries
+library(tidyverse)
+library(tableone)
+library(kableExtra)
+library(rms)
+library(interactionRCS)</code></pre>
+</div>
+<div id="table-of-characteristics-for-all-tb-placenta-samples" class="section level2">
+<h2>Table of characteristics for all TB placenta samples</h2>
+<p>Import metadata and qPCR results for SERTAD2 and reference genes (geometric mean of CYC1 and TOP1) from placenta RNA</p>
+<pre class="r"><code>metadata &lt;- read.csv(&quot;./data/TB_placenta_SERTAD2_metadata.csv&quot;)</code></pre>
+<p>Make a characteristics table</p>
+<pre class="r"><code>#create a variable list
+vars &lt;- c(&quot;Maternal_age&quot;, &quot;BMI&quot;, &quot;Diabetes&quot;, &quot;Gestation_wks&quot;, &quot;Birthweight&quot;, &quot;Centile&quot;, &quot;Fetal_sex&quot;, &quot;Systolic_BP&quot;, &quot;Diastolic_BP&quot;, &quot;Parity&quot;, &quot;Smoking&quot;)
+
+#create table stratified by condition
+tableOne &lt;- CreateTableOne(vars = vars, strata = &quot;category_3&quot;, data = metadata, testNonNormal = kruskal.test)
+kable_styling(kableone(tableOne, caption=&quot;Table 1: Patient characteristics for samples included in tissue bank placental qPCR across all gestations&quot;, nonnormal = c(&quot;Birthweight_centile&quot;, &quot;Cord_blood_pH&quot;, &quot;BMI&quot;), varLabels = TRUE, dropEqual = TRUE))</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Table 1: Patient characteristics for samples included in tissue bank placental qPCR across all gestations
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+Control
+</th>
+<th style="text-align:left;">
+IUGR
+</th>
+<th style="text-align:left;">
+PE_IUGR
+</th>
+<th style="text-align:left;">
+Preeclamptic
+</th>
+<th style="text-align:left;">
+p
+</th>
+<th style="text-align:left;">
+test
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+n
+</td>
+<td style="text-align:left;">
+59
+</td>
+<td style="text-align:left;">
+33
+</td>
+<td style="text-align:left;">
+17
+</td>
+<td style="text-align:left;">
+61
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Maternal_age (mean (SD))
+</td>
+<td style="text-align:left;">
+32.00 (4.91)
+</td>
+<td style="text-align:left;">
+31.42 (5.77)
+</td>
+<td style="text-align:left;">
+28.88 (6.04)
+</td>
+<td style="text-align:left;">
+31.48 (5.26)
+</td>
+<td style="text-align:left;">
+0.213
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BMI (median [IQR])
+</td>
+<td style="text-align:left;">
+25.10 [22.50, 28.00]
+</td>
+<td style="text-align:left;">
+26.10 [22.60, 29.50]
+</td>
+<td style="text-align:left;">
+27.10 [24.50, 33.20]
+</td>
+<td style="text-align:left;">
+27.00 [24.00, 35.83]
+</td>
+<td style="text-align:left;">
+0.020
+</td>
+<td style="text-align:left;">
+nonnorm
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Diabetes (%)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+0.489
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+3 ( 5.1)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+1 ( 5.9)
+</td>
+<td style="text-align:left;">
+1 ( 1.6)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GDM - Diet
+</td>
+<td style="text-align:left;">
+5 ( 8.5)
+</td>
+<td style="text-align:left;">
+5 (15.2)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+6 ( 9.8)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GDM - Insulin
+</td>
+<td style="text-align:left;">
+1 ( 1.7)
+</td>
+<td style="text-align:left;">
+2 ( 6.1)
+</td>
+<td style="text-align:left;">
+2 (11.8)
+</td>
+<td style="text-align:left;">
+2 ( 3.3)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:left;">
+49 (83.1)
+</td>
+<td style="text-align:left;">
+24 (72.7)
+</td>
+<td style="text-align:left;">
+14 (82.4)
+</td>
+<td style="text-align:left;">
+50 (82.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Type I - Insulin
+</td>
+<td style="text-align:left;">
+1 ( 1.7)
+</td>
+<td style="text-align:left;">
+1 ( 3.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+2 ( 3.3)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Type II - Insulin
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+1 ( 3.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gestation_wks (mean (SD))
+</td>
+<td style="text-align:left;">
+36.00 (4.17)
+</td>
+<td style="text-align:left;">
+34.35 (2.66)
+</td>
+<td style="text-align:left;">
+30.47 (3.13)
+</td>
+<td style="text-align:left;">
+31.30 (3.31)
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Birthweight (mean (SD))
+</td>
+<td style="text-align:left;">
+2809.63 (937.60)
+</td>
+<td style="text-align:left;">
+1624.24 (502.34)
+</td>
+<td style="text-align:left;">
+1070.62 (475.39)
+</td>
+<td style="text-align:left;">
+1539.49 (690.33)
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Centile (%)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+&lt; 3rd
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+11 (33.3)
+</td>
+<td style="text-align:left;">
+7 (41.2)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+&gt;97th
+</td>
+<td style="text-align:left;">
+4 ( 6.8)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+11th-25th
+</td>
+<td style="text-align:left;">
+11 (18.6)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+27 (44.3)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+26th-50th
+</td>
+<td style="text-align:left;">
+10 (16.9)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+22 (36.1)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3rd-10th
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+22 (66.7)
+</td>
+<td style="text-align:left;">
+10 (58.8)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+51st-75th
+</td>
+<td style="text-align:left;">
+17 (28.8)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+6 ( 9.8)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+76th-97th
+</td>
+<td style="text-align:left;">
+17 (28.8)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+6 ( 9.8)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fetal_sex (%)
+</td>
+<td style="text-align:left;">
+32 (54.2)
+</td>
+<td style="text-align:left;">
+13 (39.4)
+</td>
+<td style="text-align:left;">
+6 (35.3)
+</td>
+<td style="text-align:left;">
+29 (47.5)
+</td>
+<td style="text-align:left;">
+0.400
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Systolic_BP (mean (SD))
+</td>
+<td style="text-align:left;">
+120.07 (9.79)
+</td>
+<td style="text-align:left;">
+125.58 (12.88)
+</td>
+<td style="text-align:left;">
+170.59 (20.15)
+</td>
+<td style="text-align:left;">
+173.20 (16.43)
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Diastolic_BP (mean (SD))
+</td>
+<td style="text-align:left;">
+74.71 (7.68)
+</td>
+<td style="text-align:left;">
+77.97 (8.93)
+</td>
+<td style="text-align:left;">
+102.65 (11.20)
+</td>
+<td style="text-align:left;">
+103.52 (10.92)
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Parity (mean (SD))
+</td>
+<td style="text-align:left;">
+0.90 (0.86)
+</td>
+<td style="text-align:left;">
+0.67 (0.96)
+</td>
+<td style="text-align:left;">
+0.18 (0.53)
+</td>
+<td style="text-align:left;">
+0.48 (0.81)
+</td>
+<td style="text-align:left;">
+0.005
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Smoking (%)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+0.152
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+1 ( 1.6)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Current
+</td>
+<td style="text-align:left;">
+5 ( 8.5)
+</td>
+<td style="text-align:left;">
+5 (15.2)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+2 ( 3.3)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Never
+</td>
+<td style="text-align:left;">
+46 (78.0)
+</td>
+<td style="text-align:left;">
+23 (69.7)
+</td>
+<td style="text-align:left;">
+15 (88.2)
+</td>
+<td style="text-align:left;">
+50 (82.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Quit
+</td>
+<td style="text-align:left;">
+6 (10.2)
+</td>
+<td style="text-align:left;">
+5 (15.2)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+3 ( 4.9)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UA
+</td>
+<td style="text-align:left;">
+2 ( 3.4)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+2 (11.8)
+</td>
+<td style="text-align:left;">
+5 ( 8.2)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>table &lt;- print(tableOne, nonnormal = c(&quot;Birthweight_centile&quot;, &quot;Cord_blood_pH&quot;, &quot;BMI&quot;), exact = &quot;stage&quot;, quote = FALSE, noSpaces = TRUE)
+write.csv(table, &quot;output/TB_placenta_characteristics.csv&quot;)</code></pre>
+</div>
+<div id="qpcr-results-for-all-tb-placenta-samples" class="section level2">
+<h2>qPCR results for all TB placenta samples</h2>
+<p>To test whether SERTAD2 is altered in diseased placenta an additive linear model was applied, which adjusted for gestation using a restricted cubic spline with four knots.</p>
+<pre class="r"><code>model_out &lt;- glm(deltaSERTAD2 ~ rcs(Gestation_days) + category_3, data=metadata)
+dd &lt;-datadist(metadata)
+options(datadist=&quot;dd&quot;)
+summary(model_out)</code></pre>
+<pre><code>
+Call:
+glm(formula = deltaSERTAD2 ~ rcs(Gestation_days) + category_3, 
+    data = metadata)
+
+Deviance Residuals: 
+     Min        1Q    Median        3Q       Max  
+-1.03506  -0.21008  -0.00632   0.21163   0.90196  
+
+Coefficients:
+                                       Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)                          -2.477e+00  9.505e-01  -2.606    0.010 *
+rcs(Gestation_days)Gestation_days     3.496e-03  4.801e-03   0.728    0.468  
+rcs(Gestation_days)Gestation_days&#39;    9.574e-05  2.984e-02   0.003    0.997  
+rcs(Gestation_days)Gestation_days&#39;&#39;  -6.372e-02  1.034e-01  -0.616    0.539  
+rcs(Gestation_days)Gestation_days&#39;&#39;&#39;  2.040e-01  1.623e-01   1.257    0.211  
+category_3IUGR                        8.482e-02  8.173e-02   1.038    0.301  
+category_3PE_IUGR                    -1.674e-02  1.041e-01  -0.161    0.873  
+category_3Preeclamptic                1.211e-01  7.484e-02   1.618    0.108  
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+(Dispersion parameter for gaussian family taken to be 0.1171034)
+
+    Null deviance: 21.782  on 169  degrees of freedom
+Residual deviance: 18.971  on 162  degrees of freedom
+AIC: 127.65
+
+Number of Fisher Scoring iterations: 2</code></pre>
+<p>The expression of SERTAD2 did not significantly differ from control in IUGR alone, PE_IUGR or PE alone placentas across all gestations tested, after adjusting for gestational age. The confidence intervals for the coefficients are shown below.</p>
+<pre class="r"><code>model_out &lt;- ols(deltaSERTAD2 ~ rcs(Gestation_days) + category_3, data=metadata)
+summary(model_out, category_3 = &quot;Control&quot;)</code></pre>
+<pre><code>             Effects              Response : deltaSERTAD2 
+
+ Factor                            Low    High   Diff. Effect    S.E.    
+ Gestation_days                    212.25 257.75 45.5  -0.238340 0.081645
+ category_3 - IUGR:Control           1.00   2.00   NA   0.084821 0.081730
+ category_3 - PE_IUGR:Control        1.00   3.00   NA  -0.016738 0.104150
+ category_3 - Preeclamptic:Control   1.00   4.00   NA   0.121090 0.074841
+ Lower 0.95 Upper 0.95
+ -0.399570  -0.077116 
+ -0.076572   0.246210 
+ -0.222400   0.188920 
+ -0.026702   0.268880 </code></pre>
+</div>
+<div id="table-of-characteristics-for-tb-placenta-samples-34-weeks" class="section level2">
+<h2>Table of characteristics for TB placenta samples &lt;34 weeks</h2>
+<p>Subset the data to just include samples &lt;=34+0 weeks</p>
+<pre class="r"><code>metadata_preterm &lt;- metadata %&gt;% filter(Gestation_wks &lt;= 34)</code></pre>
+<p>Make a characteristics table</p>
+<pre class="r"><code>#create table stratified by condition
+tableOne &lt;- CreateTableOne(vars = vars, strata = &quot;category_3&quot;, data = metadata_preterm, testNonNormal = kruskal.test)
+kable_styling(kableone(tableOne, caption=&quot;Table 2: Patient characteristics for samples included in tissue bank placental qPCR &lt;=34+0 weeks&quot;, nonnormal = c(&quot;Birthweight_centile&quot;, &quot;Cord_blood_pH&quot;, &quot;BMI&quot;), varLabels = TRUE, dropEqual = TRUE))</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Table 2: Patient characteristics for samples included in tissue bank placental qPCR &lt;=34+0 weeks
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+Control
+</th>
+<th style="text-align:left;">
+IUGR
+</th>
+<th style="text-align:left;">
+PE_IUGR
+</th>
+<th style="text-align:left;">
+Preeclamptic
+</th>
+<th style="text-align:left;">
+p
+</th>
+<th style="text-align:left;">
+test
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+n
+</td>
+<td style="text-align:left;">
+15
+</td>
+<td style="text-align:left;">
+15
+</td>
+<td style="text-align:left;">
+15
+</td>
+<td style="text-align:left;">
+48
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Maternal_age (mean (SD))
+</td>
+<td style="text-align:left;">
+31.13 (7.23)
+</td>
+<td style="text-align:left;">
+30.00 (6.54)
+</td>
+<td style="text-align:left;">
+28.27 (5.50)
+</td>
+<td style="text-align:left;">
+31.19 (5.57)
+</td>
+<td style="text-align:left;">
+0.401
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BMI (median [IQR])
+</td>
+<td style="text-align:left;">
+27.30 [24.50, 33.75]
+</td>
+<td style="text-align:left;">
+26.10 [21.50, 29.75]
+</td>
+<td style="text-align:left;">
+27.10 [25.00, 32.00]
+</td>
+<td style="text-align:left;">
+28.00 [25.00, 36.75]
+</td>
+<td style="text-align:left;">
+0.470
+</td>
+<td style="text-align:left;">
+nonnorm
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Diabetes (%)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+0.142
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1 ( 6.7)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+1 ( 6.7)
+</td>
+<td style="text-align:left;">
+1 ( 2.1)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GDM - Diet
+</td>
+<td style="text-align:left;">
+4 (26.7)
+</td>
+<td style="text-align:left;">
+3 (20.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+2 ( 4.2)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GDM - Insulin
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+1 ( 6.7)
+</td>
+<td style="text-align:left;">
+2 ( 4.2)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:left;">
+10 (66.7)
+</td>
+<td style="text-align:left;">
+10 (66.7)
+</td>
+<td style="text-align:left;">
+13 (86.7)
+</td>
+<td style="text-align:left;">
+42 (87.5)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Type I - Insulin
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+1 ( 6.7)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+1 ( 2.1)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Type II - Insulin
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+1 ( 6.7)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gestation_wks (mean (SD))
+</td>
+<td style="text-align:left;">
+30.13 (2.51)
+</td>
+<td style="text-align:left;">
+32.01 (1.82)
+</td>
+<td style="text-align:left;">
+29.90 (2.88)
+</td>
+<td style="text-align:left;">
+29.93 (2.17)
+</td>
+<td style="text-align:left;">
+0.023
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Birthweight (mean (SD))
+</td>
+<td style="text-align:left;">
+1559.13 (495.62)
+</td>
+<td style="text-align:left;">
+1218.07 (393.15)
+</td>
+<td style="text-align:left;">
+965.57 (406.90)
+</td>
+<td style="text-align:left;">
+1241.77 (368.03)
+</td>
+<td style="text-align:left;">
+0.002
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Centile (%)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+&lt; 3rd
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+4 (26.7)
+</td>
+<td style="text-align:left;">
+7 (46.7)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+&gt;97th
+</td>
+<td style="text-align:left;">
+1 ( 6.7)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+11th-25th
+</td>
+<td style="text-align:left;">
+2 (13.3)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+22 (45.8)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+26th-50th
+</td>
+<td style="text-align:left;">
+3 (20.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+19 (39.6)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3rd-10th
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+11 (73.3)
+</td>
+<td style="text-align:left;">
+8 (53.3)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+51st-75th
+</td>
+<td style="text-align:left;">
+5 (33.3)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+4 ( 8.3)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+76th-97th
+</td>
+<td style="text-align:left;">
+4 (26.7)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+3 ( 6.2)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fetal_sex (%)
+</td>
+<td style="text-align:left;">
+9 (60.0)
+</td>
+<td style="text-align:left;">
+8 (53.3)
+</td>
+<td style="text-align:left;">
+5 (33.3)
+</td>
+<td style="text-align:left;">
+25 (52.1)
+</td>
+<td style="text-align:left;">
+0.492
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Systolic_BP (mean (SD))
+</td>
+<td style="text-align:left;">
+123.47 (9.20)
+</td>
+<td style="text-align:left;">
+123.33 (11.31)
+</td>
+<td style="text-align:left;">
+170.33 (18.85)
+</td>
+<td style="text-align:left;">
+174.27 (16.60)
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Diastolic_BP (mean (SD))
+</td>
+<td style="text-align:left;">
+73.20 (7.61)
+</td>
+<td style="text-align:left;">
+78.40 (7.56)
+</td>
+<td style="text-align:left;">
+102.67 (11.00)
+</td>
+<td style="text-align:left;">
+104.19 (11.18)
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Parity (mean (SD))
+</td>
+<td style="text-align:left;">
+1.27 (1.16)
+</td>
+<td style="text-align:left;">
+0.80 (1.21)
+</td>
+<td style="text-align:left;">
+0.20 (0.56)
+</td>
+<td style="text-align:left;">
+0.44 (0.82)
+</td>
+<td style="text-align:left;">
+0.007
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Smoking (%)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+0.010
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+1 ( 2.1)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Current
+</td>
+<td style="text-align:left;">
+3 (20.0)
+</td>
+<td style="text-align:left;">
+5 (33.3)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+2 ( 4.2)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Never
+</td>
+<td style="text-align:left;">
+11 (73.3)
+</td>
+<td style="text-align:left;">
+7 (46.7)
+</td>
+<td style="text-align:left;">
+13 (86.7)
+</td>
+<td style="text-align:left;">
+39 (81.2)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Quit
+</td>
+<td style="text-align:left;">
+1 ( 6.7)
+</td>
+<td style="text-align:left;">
+3 (20.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+1 ( 2.1)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UA
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+2 (13.3)
+</td>
+<td style="text-align:left;">
+5 (10.4)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>table &lt;- print(tableOne, nonnormal = c(&quot;Birthweight_centile&quot;, &quot;Cord_blood_pH&quot;, &quot;BMI&quot;), exact = &quot;stage&quot;, quote = FALSE, noSpaces = TRUE)
+write.csv(table, &quot;output/TB_placenta_characteristics_preterm.csv&quot;)</code></pre>
+</div>
+<div id="qpcr-results-for-tb-placenta-samples-34-weeks" class="section level2">
+<h2>qPCR results for TB placenta samples &lt;34 weeks</h2>
+<p>To test whether SERTAD2 is altered in preterm diseased placenta an additive linear model was applied, which adjusted for gestation using a restricted cubic spline with four knots.</p>
+<pre class="r"><code>model_out &lt;- glm(deltaSERTAD2 ~ rcs(Gestation_days) + category_3, data=metadata_preterm)
+dd &lt;-datadist(metadata)
+options(datadist=&quot;dd&quot;)
+summary(model_out)</code></pre>
+<pre><code>
+Call:
+glm(formula = deltaSERTAD2 ~ rcs(Gestation_days) + category_3, 
+    data = metadata_preterm)
+
+Deviance Residuals: 
+     Min        1Q    Median        3Q       Max  
+-0.96689  -0.17537  -0.01112   0.17654   0.85003  
+
+Coefficients:
+                                     Estimate Std. Error t value Pr(&gt;|t|)   
+(Intercept)                           0.24654    2.03362   0.121  0.90379   
+rcs(Gestation_days)Gestation_days    -0.01187    0.01087  -1.092  0.27801   
+rcs(Gestation_days)Gestation_days&#39;    0.04930    0.04013   1.228  0.22272   
+rcs(Gestation_days)Gestation_days&#39;&#39;  -0.16598    0.25022  -0.663  0.50890   
+rcs(Gestation_days)Gestation_days&#39;&#39;&#39;  0.01353    0.52191   0.026  0.97938   
+category_3IUGR                        0.19396    0.13903   1.395  0.16663   
+category_3PE_IUGR                     0.09515    0.13374   0.711  0.47873   
+category_3Preeclamptic                0.29315    0.10834   2.706  0.00823 **
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+(Dispersion parameter for gaussian family taken to be 0.1317974)
+
+    Null deviance: 13.055  on 92  degrees of freedom
+Residual deviance: 11.203  on 85  degrees of freedom
+AIC: 85.094
+
+Number of Fisher Scoring iterations: 2</code></pre>
+<p>The expression of SERTAD2 did not significantly differ from control in IUGR alone or PE_IUGR, but PE alone was significantly higher than control placentas, after adjusting for gestational age. The confidence intervals for the coefficients are shown below.</p>
+<pre class="r"><code>model_out &lt;- ols(deltaSERTAD2 ~ rcs(Gestation_days) + category_3, data=metadata)
+summary(model_out, category_3 = &quot;Control&quot;)</code></pre>
+<pre><code>             Effects              Response : deltaSERTAD2 
+
+ Factor                            Low    High   Diff. Effect    S.E.    
+ Gestation_days                    212.25 257.75 45.5  -0.238340 0.081645
+ category_3 - IUGR:Control           1.00   2.00   NA   0.084821 0.081730
+ category_3 - PE_IUGR:Control        1.00   3.00   NA  -0.016738 0.104150
+ category_3 - Preeclamptic:Control   1.00   4.00   NA   0.121090 0.074841
+ Lower 0.95 Upper 0.95
+ -0.399570  -0.077116 
+ -0.076572   0.246210 
+ -0.222400   0.188920 
+ -0.026702   0.268880 </code></pre>
+<p>Since we identified SERTAD2 in the FOX study from comparing blood from women with preterm growth restricted fetuses with and without preeclampsia, next we tested whether there was a difference in the expression level of SERTAD2 between these two groups.</p>
+<pre class="r"><code>model_out &lt;- ols(deltaSERTAD2 ~ rcs(Gestation_days) + category_3, data=metadata)
+summary(model_out, category_3 = &quot;IUGR&quot;)</code></pre>
+<pre><code>             Effects              Response : deltaSERTAD2 
+
+ Factor                         Low    High   Diff. Effect    S.E.    
+ Gestation_days                 212.25 257.75 45.5  -0.238340 0.081645
+ category_3 - Control:IUGR        2.00   1.00   NA  -0.084821 0.081730
+ category_3 - PE_IUGR:IUGR        2.00   3.00   NA  -0.101560 0.107980
+ category_3 - Preeclamptic:IUGR   2.00   4.00   NA   0.036266 0.079196
+ Lower 0.95 Upper 0.95
+ -0.39957   -0.077116 
+ -0.24621    0.076572 
+ -0.31479    0.111670 
+ -0.12012    0.192660 </code></pre>
+<p>The confidence interval for the comparison between PE_IUGR and PE overlaps 0, indicating that there is not a significant difference in SERTAD2 expression between these two groups.</p>
+</div>
+<div id="table-of-characteristics-for-all-tb-pax-samples" class="section level2">
+<h2>Table of characteristics for all TB PAX samples</h2>
+<p>Import metadata and qPCR results for SERTAD2 and reference genes (geometric mean of B2M, GUSB and YWHAZ) from RNA isolated from maternal blood collected into PAXgene tubes.</p>
+<pre class="r"><code>metadata_PAX &lt;- read.csv(&quot;./data/TB_PAX_SERTAD2_metadata.csv&quot;)</code></pre>
+<p>Make a characteristics table</p>
+<pre class="r"><code>#create a variable list
+vars &lt;- c(&quot;Maternal_age&quot;, &quot;BMI&quot;, &quot;Diabetes&quot;, &quot;GA_collection&quot;, &quot;GA_delivery&quot;, &quot;Birthweight&quot;, &quot;Centile&quot;, &quot;Fetal_sex&quot;, &quot;Systolic_BP&quot;, &quot;Diastolic_BP&quot;, &quot;Parity&quot;, &quot;Smoking&quot;)
+
+#create table stratified by condition
+tableOne &lt;- CreateTableOne(vars = vars, strata = &quot;Category_2&quot;, data = metadata_PAX, testNonNormal = kruskal.test)
+kable_styling(kableone(tableOne, caption=&quot;Table 3: Patient characteristics for samples included in tissue bank PAX qPCR across all gestations&quot;, nonnormal = c( &quot;BMI&quot;), varLabels = TRUE, dropEqual = TRUE))</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Table 3: Patient characteristics for samples included in tissue bank PAX qPCR across all gestations
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+Control
+</th>
+<th style="text-align:left;">
+PE+SGA
+</th>
+<th style="text-align:left;">
+Preeclamptic
+</th>
+<th style="text-align:left;">
+SGA
+</th>
+<th style="text-align:left;">
+p
+</th>
+<th style="text-align:left;">
+test
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+n
+</td>
+<td style="text-align:left;">
+19
+</td>
+<td style="text-align:left;">
+9
+</td>
+<td style="text-align:left;">
+17
+</td>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Maternal_age (mean (SD))
+</td>
+<td style="text-align:left;">
+29.84 (4.05)
+</td>
+<td style="text-align:left;">
+33.78 (5.38)
+</td>
+<td style="text-align:left;">
+30.12 (6.16)
+</td>
+<td style="text-align:left;">
+35.67 (4.93)
+</td>
+<td style="text-align:left;">
+0.107
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BMI (median [IQR])
+</td>
+<td style="text-align:left;">
+22.00 [21.50, 28.00]
+</td>
+<td style="text-align:left;">
+32.00 [25.00, 34.40]
+</td>
+<td style="text-align:left;">
+29.72 [25.00, 37.15]
+</td>
+<td style="text-align:left;">
+22.30 [21.65, 26.65]
+</td>
+<td style="text-align:left;">
+0.015
+</td>
+<td style="text-align:left;">
+nonnorm
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Diabetes (%)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+0.008
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GDM - Diet
+</td>
+<td style="text-align:left;">
+1 ( 5.3)
+</td>
+<td style="text-align:left;">
+2 (22.2)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:left;">
+18 (94.7)
+</td>
+<td style="text-align:left;">
+7 (77.8)
+</td>
+<td style="text-align:left;">
+16 (94.1)
+</td>
+<td style="text-align:left;">
+2 ( 66.7)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Type I - Insulin
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+1 ( 5.9)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Type II - Insulin
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+1 ( 33.3)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GA_collection (mean (SD))
+</td>
+<td style="text-align:left;">
+28.47 (1.78)
+</td>
+<td style="text-align:left;">
+29.75 (3.75)
+</td>
+<td style="text-align:left;">
+30.06 (1.27)
+</td>
+<td style="text-align:left;">
+27.57 (2.98)
+</td>
+<td style="text-align:left;">
+0.092
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GA_delivery (mean (SD))
+</td>
+<td style="text-align:left;">
+39.79 (1.21)
+</td>
+<td style="text-align:left;">
+29.60 (3.37)
+</td>
+<td style="text-align:left;">
+30.66 (2.23)
+</td>
+<td style="text-align:left;">
+35.24 (4.59)
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Birthweight (mean (SD))
+</td>
+<td style="text-align:left;">
+3519.26 (442.10)
+</td>
+<td style="text-align:left;">
+1004.89 (424.20)
+</td>
+<td style="text-align:left;">
+1376.41 (447.08)
+</td>
+<td style="text-align:left;">
+2003.00 (872.72)
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Centile (%)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+&lt; 3rd
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+2 (22.2)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+&gt;97th
+</td>
+<td style="text-align:left;">
+1 ( 5.3)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+11th-25th
+</td>
+<td style="text-align:left;">
+3 (15.8)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+6 (35.3)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+26th-50th
+</td>
+<td style="text-align:left;">
+7 (36.8)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+8 (47.1)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3rd-10th
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+7 (77.8)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+3 (100.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+51st-75th
+</td>
+<td style="text-align:left;">
+4 (21.1)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+1 ( 5.9)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+76th-97th
+</td>
+<td style="text-align:left;">
+4 (21.1)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+2 (11.8)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fetal_sex (%)
+</td>
+<td style="text-align:left;">
+11 (57.9)
+</td>
+<td style="text-align:left;">
+5 (55.6)
+</td>
+<td style="text-align:left;">
+6 (35.3)
+</td>
+<td style="text-align:left;">
+1 ( 33.3)
+</td>
+<td style="text-align:left;">
+0.511
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Systolic_BP (mean (SD))
+</td>
+<td style="text-align:left;">
+129.16 (4.45)
+</td>
+<td style="text-align:left;">
+169.22 (11.24)
+</td>
+<td style="text-align:left;">
+173.41 (18.12)
+</td>
+<td style="text-align:left;">
+128.33 (27.54)
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Diastolic_BP (mean (SD))
+</td>
+<td style="text-align:left;">
+78.11 (6.30)
+</td>
+<td style="text-align:left;">
+100.44 (9.38)
+</td>
+<td style="text-align:left;">
+102.12 (8.63)
+</td>
+<td style="text-align:left;">
+75.67 (17.79)
+</td>
+<td style="text-align:left;">
+&lt;0.001
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Parity (mean (SD))
+</td>
+<td style="text-align:left;">
+0.53 (0.61)
+</td>
+<td style="text-align:left;">
+0.44 (1.01)
+</td>
+<td style="text-align:left;">
+0.18 (0.39)
+</td>
+<td style="text-align:left;">
+0.33 (0.58)
+</td>
+<td style="text-align:left;">
+0.432
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Smoking (%)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+0.558
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Current
+</td>
+<td style="text-align:left;">
+1 ( 5.3)
+</td>
+<td style="text-align:left;">
+1 (11.1)
+</td>
+<td style="text-align:left;">
+1 ( 5.9)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Never
+</td>
+<td style="text-align:left;">
+13 (68.4)
+</td>
+<td style="text-align:left;">
+7 (77.8)
+</td>
+<td style="text-align:left;">
+13 (76.5)
+</td>
+<td style="text-align:left;">
+3 (100.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Quit
+</td>
+<td style="text-align:left;">
+5 (26.3)
+</td>
+<td style="text-align:left;">
+1 (11.1)
+</td>
+<td style="text-align:left;">
+1 ( 5.9)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UA
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+2 (11.8)
+</td>
+<td style="text-align:left;">
+0 ( 0.0)
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>table &lt;- print(tableOne, nonnormal = c( &quot;BMI&quot;), exact = &quot;stage&quot;, quote = FALSE, noSpaces = TRUE)
+write.csv(table, &quot;output/PAX_characteristics.csv&quot;)</code></pre>
+</div>
+<div id="qpcr-results-for-all-pax-placenta-samples" class="section level2">
+<h2>qPCR results for all PAX placenta samples</h2>
+<p>To test whether SERTAD2 is altered in PAX RNA collected from maternal blood, an additive linear model was applied, which adjusted for gestation using a restricted cubic spline with four knots.</p>
+<pre class="r"><code>model_out &lt;- glm(deltaSERTAD2 ~ rcs(GA_collection) + Category_2, data=metadata_PAX)
+dd &lt;-datadist(metadata_PAX)
+options(datadist=&quot;dd&quot;)
+summary(model_out)</code></pre>
+<pre><code>
+Call:
+glm(formula = deltaSERTAD2 ~ rcs(GA_collection) + Category_2, 
+    data = metadata_PAX)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-1.0297  -0.4483   0.0440   0.3784   1.1363  
+
+Coefficients:
+                                   Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)                        -3.17545    4.51816  -0.703    0.486
+rcs(GA_collection)GA_collection     0.03739    0.17320   0.216    0.830
+rcs(GA_collection)GA_collection&#39;    0.43826    0.68064   0.644    0.523
+rcs(GA_collection)GA_collection&#39;&#39;  -8.57374    7.05697  -1.215    0.232
+rcs(GA_collection)GA_collection&#39;&#39;&#39; 15.92332   11.47004   1.388    0.173
+Category_2PE+SGA                    0.46342    0.30613   1.514    0.138
+Category_2Preeclamptic              0.11568    0.21474   0.539    0.593
+Category_2SGA                      -0.30970    0.40980  -0.756    0.454
+
+(Dispersion parameter for gaussian family taken to be 0.3399723)
+
+    Null deviance: 17.409  on 47  degrees of freedom
+Residual deviance: 13.599  on 40  degrees of freedom
+AIC: 93.68
+
+Number of Fisher Scoring iterations: 2</code></pre>
+<p>The expression of SERTAD2 did not significantly differ from control in IUGR alone, PE_IUGR or PE alone PAX across all gestations tested, after adjusting for gestational age. The confidence intervals for the coefficients are shown below.</p>
+<pre class="r"><code>model_out &lt;- ols(deltaSERTAD2 ~ rcs(GA_collection) + Category_2, data=metadata_PAX)
+summary(model_out, Category_2 = &quot;Control&quot;)</code></pre>
+<pre><code>             Effects              Response : deltaSERTAD2 
+
+ Factor                            Low    High   Diff. Effect   S.E.   
+ GA_collection                     28.107 30.607 2.5   -0.35450 0.24541
+ Category_2 - PE+SGA:Control        1.000  2.000  NA    0.46342 0.30613
+ Category_2 - Preeclamptic:Control  1.000  3.000  NA    0.11568 0.21474
+ Category_2 - SGA:Control           1.000  4.000  NA   -0.30970 0.40980
+ Lower 0.95 Upper 0.95
+ -0.85048   0.14148   
+ -0.15528   1.08210   
+ -0.31834   0.54969   
+ -1.13790   0.51854   </code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.6.1 (2019-07-05)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS  10.16
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] interactionRCS_0.1.0 rms_6.2-0            SparseM_1.81        
+ [4] Hmisc_4.6-0          Formula_1.2-4        survival_3.4-0      
+ [7] lattice_0.20-45      kableExtra_1.3.4     tableone_0.13.2     
+[10] forcats_0.5.2        stringr_1.4.1        dplyr_1.0.10        
+[13] purrr_0.3.4          readr_2.1.2          tidyr_1.2.1         
+[16] tibble_3.1.8         ggplot2_3.3.6        tidyverse_1.3.2     
+[19] workflowr_1.7.0     
+
+loaded via a namespace (and not attached):
+  [1] readxl_1.4.1         backports_1.4.1      systemfonts_1.0.4   
+  [4] plyr_1.8.7           splines_3.6.1        pspline_1.0-18      
+  [7] listenv_0.8.0        TH.data_1.1-1        pryr_0.1.5          
+ [10] digest_0.6.29        foreach_1.5.2        htmltools_0.5.3     
+ [13] fansi_1.0.3          magrittr_2.0.3       checkmate_2.1.0     
+ [16] googlesheets4_1.0.1  cluster_2.1.2        tzdb_0.3.0          
+ [19] recipes_1.0.1        globals_0.16.1       modelr_0.1.9        
+ [22] gower_1.0.0          matrixStats_0.62.0   sandwich_3.0-2      
+ [25] svglite_2.1.0        hardhat_1.2.0        jpeg_0.1-9          
+ [28] colorspace_2.0-3     rvest_1.0.3          mitools_2.4         
+ [31] haven_2.5.1          xfun_0.33            callr_3.7.2         
+ [34] crayon_1.5.1         jsonlite_1.8.0       zoo_1.8-11          
+ [37] iterators_1.0.14     glue_1.6.2           gtable_0.3.1        
+ [40] gargle_1.2.1         ipred_0.9-13         webshot_0.5.4       
+ [43] MatrixModels_0.4-1   future.apply_1.9.1   scales_1.2.1        
+ [46] mvtnorm_1.1-3        DBI_1.1.3            Rcpp_1.0.9          
+ [49] viridisLite_0.4.1    htmlTable_2.4.1      proxy_0.4-27        
+ [52] foreign_0.8-76       stats4_3.6.1         lava_1.6.10         
+ [55] survey_4.1-1         prodlim_2019.11.13   htmlwidgets_1.5.4   
+ [58] httr_1.4.4           RColorBrewer_1.1-3   ellipsis_0.3.2      
+ [61] pkgconfig_2.0.3      nnet_7.3-17          sass_0.4.2          
+ [64] dbplyr_2.2.1         deldir_1.0-6         utf8_1.2.2          
+ [67] caret_6.0-93         tidyselect_1.1.2     rlang_1.0.6         
+ [70] reshape2_1.4.4       later_1.3.0          munsell_0.5.0       
+ [73] cellranger_1.1.0     tools_3.6.1          cachem_1.0.6        
+ [76] cli_3.4.1            generics_0.1.3       broom_1.0.1         
+ [79] evaluate_0.16        fastmap_1.1.0        yaml_2.3.5          
+ [82] ModelMetrics_1.2.2.2 processx_3.7.0       knitr_1.40          
+ [85] fs_1.5.2             future_1.28.0        nlme_3.1-155        
+ [88] whisker_0.4          quantreg_5.85        xml2_1.3.3          
+ [91] compiler_3.6.1       rstudioapi_0.14      png_0.1-7           
+ [94] e1071_1.7-11         reprex_2.0.2         bslib_0.4.0         
+ [97] stringi_1.7.8        highr_0.9            ps_1.7.1            
+[100] Matrix_1.3-4         vctrs_0.4.1          msm_1.6.9           
+[103] pillar_1.8.1         lifecycle_1.0.2      jquerylib_0.1.4     
+[106] data.table_1.14.2    conquer_1.2.1        httpuv_1.6.6        
+[109] R6_2.5.1             latticeExtra_0.6-30  promises_1.2.0.1    
+[112] gridExtra_2.3        parallelly_1.32.1    codetools_0.2-18    
+[115] polspline_1.1.19     boot_1.3-28          MASS_7.3-58.1       
+[118] assertthat_0.2.1     rprojroot_2.0.3      withr_2.5.0         
+[121] multcomp_1.4-20      expm_0.999-6         parallel_3.6.1      
+[124] hms_1.1.2            labelled_2.10.0      grid_3.6.1          
+[127] rpart_4.1.16         timeDate_4021.104    class_7.3-20        
+[130] rmarkdown_2.16       googledrive_2.0.0    git2r_0.30.1        
+[133] getPass_0.2-2        pROC_1.18.0          lubridate_1.8.0     
+[136] base64enc_0.1-3      interp_1.0-33       </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
