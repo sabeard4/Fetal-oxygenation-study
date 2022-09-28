@@ -33,6 +33,11 @@ Gene expression differences in the maternal blood of cases only, between women w
 * DGE analysis
   * [DGE results](FOX_PE_RUVSeq.html): Exploratory data analysis and DGE analysis using [RUVSeq](https://bioconductor.org/packages/release/bioc/html/RUVSeq.html) to remove unwanted variation followed by [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html) comparing preterm samples with and without preeclampsia
   
+### qPCR patient characteristics tables
+
+* Patient characteristics for qPCR run in the study
+    * [Tables](Characteristics_tables.html): Tables and statistical analysis for qPCR results
+  
   
   
   
